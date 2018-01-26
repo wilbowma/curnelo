@@ -310,17 +310,8 @@
                e `((a . z) (A . Nat) . ,gamma) '(((eq A) a) a))))
 
 ;; Let's try polymorphic Lists
-#;(run 2 (q)
-     (fresh (gamma)
-            (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
-                     (nil . (Pi (A : (Type lz)) (List A)))
-                     (List . (Pi (A : (Type lz)) (Type lz)))
-                     (z . Nat)
-                     (s . (Pi (x : Nat) Nat))
-                     (Nat . (Type lz)))
-                    `(nil ,q) gamma '(List Nat))))
-#;(chko
- #:n 5 #:!c (e)
+(chko
+ #:out #:n 1 #:!c (e) '(nil Nat)
  (fresh (gamma)
         (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
                  (nil . (Pi (A : (Type lz)) (List A)))
@@ -328,5 +319,16 @@
                  (z . Nat)
                  (s . (Pi (x : Nat) Nat))
                  (Nat . (Type lz)))
-               e gamma '(List Nat)))
- )
+               e `((A . Nat) . ,gamma) '(List A)))
+
+ ;; TODO: Busy searching the universe hierarchy..
+ #:subset #:n 7 #:!c (e) '((nil Nat)
+                            (((cons Nat) z) (nil Nat)))
+ (fresh (gamma)
+        (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
+                 (nil . (Pi (A : (Type lz)) (List A)))
+                 (List . (Pi (A : (Type lz)) (Type lz)))
+                 (z . Nat)
+                 (s . (Pi (x : Nat) Nat))
+                 (Nat . (Type lz)))
+               e `((A . Nat) . ,gamma) '(List A))))
