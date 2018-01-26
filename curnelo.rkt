@@ -269,6 +269,42 @@
                e gamma 'NatList))
  )
 
+(define eq-decl
+  '((refl . (Pi (A : (Type lz)) (Pi (a : A) (((eq A) a) a))))
+    (eq . (Pi (A : (Type lz)) (Pi (a : A) (Pi (b : A) (Type lz)))))))
+
+(define nat-decl
+  '((z . Nat)
+    (s . (Pi (n : Nat) Nat))
+    (Nat . (Type lz))))
+
+(chko
+ #:out #:n 2 #:!c (A) '(Type lz)
+ (lookupo 'Nat (append eq-decl nat-decl) A)
+
+ #:out #:n 1 #:!c (A gamma) '((Pi (a : A) (((eq A) a) a))
+
+                              ((A . Nat) . _.0))
+
+ (typeo (append eq-decl nat-decl) '(refl Nat) gamma A)
+
+ ;; Infer the type of (refl Nat z)
+ #:out #:n 1 #:!c (A gamma) '((((eq A) a) a)
+
+                              ((a . z)
+                               (A . Nat)
+                               ;; TODO: includes incorrect (Nat . A) binding...
+                               . _.0))
+
+ (typeo (append eq-decl nat-decl)
+        '((refl Nat) z) gamma A)
+
+ ;; Find some proofs that z = z
+ #:in #:n 2 #:!c (e) '((refl Nat) z)
+ (fresh (gamma)
+        (typeo (append eq-decl nat-decl)
+               e `((a . z) (A . Nat) . ,gamma) '(((eq A) a) a))))
+
 ;; Let's try polymorphic Lists
 #;(run 2 (q)
      (fresh (gamma)
