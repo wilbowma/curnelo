@@ -81,13 +81,13 @@
 
 (chko
  #:out #:!c (q) '(Type lz)
- (evalo '() '() '((lambda (x : (Type (lsucc lz))) x) (Type lz)) q)
+ (evalo '() '((lambda (x : (Type (lsucc lz))) x) (Type lz)) q)
 
  #:out #:!c (q) 'x
- (evalo '() '() 'x q)
+ (evalo '() 'x q)
 
  #:out #:!c (q) '(closure () (x : (Type lz)) x)
- (evalo '() '()
+ (evalo '()
         '((lambda (f : (Pi (x : (Type lz)) (Type lz))) f)
           (lambda (x : (Type lz)) x))
         q)
@@ -98,7 +98,7 @@
    ((lambda (_.0 : _.1) _.0) x)
    ((lambda (_.0 : _.1) x) _.2)
    ((lambda (_.0 : _.1) x) (lambda (_.2 : _.3) (Type _.4))))
- (evalo '() '() q 'x)
+ (evalo '() q 'x)
 
  #:= #:n 5 #:!c (q)
  '((Type _.0)
@@ -106,7 +106,7 @@
    (Pi (_.0 : (Type _.1)) (Type _.2))
    (Pi (_.0 : _.1) (Type _.2))
    (Pi (_.0 : (Type _.1)) _.0))
- (evalo '() '() q q))
+ (evalo '() q q))
 
 (define typeo
   (lambda (Gamma e gamma A)
@@ -166,34 +166,34 @@
 (require racket/function)
 (chko
  #:out #:!c (q) '(Type (lsucc lz))
- (typeo '() '() '(Type lz) '() q)
+ (typeo '() '(Type lz) '() q)
 
  #:= (q) '()
- (typeo '() '() 'z '() q)
+ (typeo '() 'z '() q)
 
  #:out #:!c (q) '(Type lz)
- (typeo '() '((z . (Type lz))) 'z '() q)
+ (typeo '((z . (Type lz))) 'z '() q)
 
  #:out #:!c (q) '(Pi (x : (Type lz)) (Type lz))
- (typeo '() '() '(lambda (x : (Type lz)) x) '() q)
+ (typeo '() '(lambda (x : (Type lz)) x) '() q)
 
  #:= (q gamma) '()
- (typeo '() '() '((lambda (x : (Type lz)) (Type lz)) (Type lz)) gamma q)
+ (typeo '() '((lambda (x : (Type lz)) (Type lz)) (Type lz)) gamma q)
 
  #:out #:!c (q gamma) '((Type (lsucc lz)) ((x . (Type lz)) . _.0))
- (typeo '() '() '((lambda (x : (Type (lsucc lz))) (Type lz)) (Type lz)) gamma q)
+ (typeo '() '((lambda (x : (Type (lsucc lz))) (Type lz)) (Type lz)) gamma q)
 
  #:out #:!c (q gamma) '((Type (lsucc lz)) ((x . (Type lz)) . _.0))
- (typeo '() '() '((lambda (x : (Type (lsucc lz))) x) (Type lz)) gamma q)
+ (typeo '() '((lambda (x : (Type (lsucc lz))) x) (Type lz)) gamma q)
 
  #:out #:!c (q) '(Pi (A : (Type lz)) (Pi (a : A) A))
- (typeo '() '() '(lambda (A : (Type lz))
+ (typeo '() '(lambda (A : (Type lz))
                    (lambda (a : A)
                      a)) '() q)
 
  ;; Try inferring some types
  #:in #:n 5 #:!c (q ?1 ?2) '((Pi (A : (Type lz)) (Pi (a : A) A)) (Type lz) A)
- (typeo '() '() `(lambda (A : ,?1)
+ (typeo '() `(lambda (A : ,?1)
                    (lambda (a : ,?2)
                      a)) '() q)
 
@@ -201,49 +201,41 @@
  #:in #:n 2 #:!c (e) '(lambda (A : (Type lz))
                   (lambda (a : A)
                     a))
- (typeo '() '() e '() `(Pi (A : (Type lz)) (Pi (a : A) A)))
+ (typeo '() e '() `(Pi (A : (Type lz)) (Pi (a : A) A)))
 
  ;; Check dependent application
  #:in #:n 1 #:!c (q) '(Pi (a : (Type lz)) (Type lz))
  (fresh (gamma ?1 q1)
-        (typeo '() '() `((lambda (A : ,?1)
+        (typeo '() `((lambda (A : ,?1)
                            (lambda (a : A)
                              a))
                          (Type lz)) gamma q1)
-        (evalo '() gamma q1 q))
+        (evalo gamma q1 q))
 
  ;; Check conversion
  #:in #:n 1 #:!c (q) '(Pi (a : (Type lz)) (Type lz))
  (fresh (gamma ?1)
-        (type-checko '() '() `((lambda (A : ,?1)
+        (type-checko '() `((lambda (A : ,?1)
                                  (lambda (a : A)
                                    a))
                                (Type lz)) gamma q))
 
  ;; Check False as a concept
  #:out #:n 1 #:!c (q) '(Type lz)
- (type-checko '() '() `(Pi (α : (Type lz)) α) '() q)
+ (type-checko '() `(Pi (α : (Type lz)) α) '() q)
 
  ;; Prove me some Nats
  #:subset #:n 5 #:!c (e) '(z (s z))
  (fresh (gamma)
-        (typeo '() '((z . Nat) (s . (Pi (x : Nat) Nat)) (Nat . (Type lz)))
-               e gamma 'Nat))
-
- ;; Inductive tests
- #:subset #:n 8 #:!c (e) '(z (s z))
- (fresh (gamma)
-        (typeo '((Nat . (0 (Type lz)
-                           ((z . Nat)
-                            (s . (Pi (x : Nat) Nat)))))) '()
-                            e gamma 'Nat)))
+        (typeo '((z . Nat) (s . (Pi (x : Nat) Nat)) (Nat . (Type lz)))
+               e gamma 'Nat)))
 
 ;; Prove False
 
 ;; Have been run for 60 seconds
 #;(chko
  #:= #:t 60 (e) '((()))
- (typeo '() '() e '() '(Pi (α : (Type lz)) α))
+ (typeo '() e '() '(Pi (α : (Type lz)) α))
 
 ;; Prove False under some assumptions
  #:= #:t 60 (e) '((()))
