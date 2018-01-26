@@ -6,6 +6,10 @@
  "chko.rkt"
  chk)
 
+(provide
+ typeo
+ evalo)
+
 (define (varo e)
   (conde
    [(symbolo e)
