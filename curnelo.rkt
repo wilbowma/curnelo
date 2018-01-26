@@ -163,7 +163,6 @@
         [(== x y) (== t term)]
         [(=/= x y) (lookupo x gamma^ term)]))))
 
-(require racket/function)
 (chko
  #:out #:!c (q) '(Type (lsucc lz))
  (typeo '() '(Type lz) '() q)
