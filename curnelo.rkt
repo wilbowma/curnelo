@@ -124,14 +124,14 @@
       [(fresh (x A^ B Gamma^ gamma^ i) ;; T-Pi-Prop
          (== `(Pi (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
-         (ext-envo gamma x x gamma^)
+;         (ext-envo gamma x x gamma^)
          (== A `(Type lz))
          (typeo Gamma A^ gamma `(Type ,i))
          (typeo Gamma^ B gamma^ `(Type lz)))]
       [(fresh (x A^ B Gamma^ gamma^ i j k) ;; T-Pi-Type
          (== `(Pi (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
-         (ext-envo gamma x x gamma^)
+;         (ext-envo gamma x x gamma^)
          (== A `(Type ,k))
          (max-levelo i j k)
          (typeo Gamma A^ gamma `(Type ,i))
@@ -140,7 +140,7 @@
          (== `(lambda (,x : ,A^) ,body) e)
          (== `(Pi (,x : ,A^) ,B) A)
          (ext-envo Gamma x A^ Gamma^)
-         (ext-envo gamma x x gamma^)
+;         (ext-envo gamma x x gamma^)
          (typeo Gamma A^ gamma `(Type ,i))
          (typeo Gamma^ body gamma^ B))]
       [(fresh (e1 e2 A^ B gamma^^ gamma^ x) ;; T-App
