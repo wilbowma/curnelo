@@ -54,9 +54,11 @@
       (== k `(lsucc ,k^))
       (max-levelo i^ j^ k^))]))
 
-(define (not-closureo e)
+(define (constanto e)
   (conde
-   [(symbolo e)]
+   [(symbolo e)
+    (=/= 'fst e)
+    (=/= 'snd e)]
    [(fresh (e1 e2)
       (== `(,e1 . ,e2) e)
       (=/= 'closure e1))]))
@@ -75,11 +77,23 @@
          (== `(lambda (,x : ,A) ,ebody) e)
          (== `(closure ,gamma (,x : ,A) ,ebody^) e^)
          (evalo gamma ebody ebody^))]
+      [(fresh (ep ep^ e1 e2 e1^)
+         (== `(fst ,ep) e)
+         (== `(pair ,e1 ,e2) ep^)
+         (== e1^ e^)
+         (evalo gamma ep ep^)
+         (evalo gamma e1 e1^))]
+      [(fresh (ep ep^ e1 e2 e2^)
+         (== `(snd ,ep) e)
+         (== `(pair ,e1 ,e2) ep^)
+         (== e2^ e^)
+         (evalo gamma ep ep^)
+         (evalo gamma e2 e2^))]
       [(fresh (e1 e2 e2^)
          (== `(,e1 ,e2) e)
          (conde
            [(fresh (e1^)
-              (not-closureo e1^)
+              (constanto e1^)
               (evalo gamma e1 e1^)
               (== `(,e1^ ,e2^) e^))]
            [(fresh (gamma^ x A ebody env)
@@ -100,18 +114,6 @@
          (== `(pair ,e1 ,e2) e)
          (== `(pair ,e1^ ,e2^) e^)
          (evalo gamma e1 e1^)
-         (evalo gamma e2 e2^))]
-      [(fresh (ep ep^ e1 e2 e1^)
-         (== `(fst ,ep) e)
-         (== `(pair ,e1 ,e2) ep^)
-         (== e1^ e^)
-         (evalo gamma ep ep^)
-         (evalo gamma e1 e1^))]
-      [(fresh (ep ep^ e1 e2 e2^)
-         (== `(snd ,ep) e)
-         (== `(pair ,e1 ,e2) ep^)
-         (== e2^ e^)
-         (evalo gamma ep ep^)
          (evalo gamma e2 e2^))])))
 
 (chko
@@ -128,16 +130,18 @@
         q)
 
  ; NB: Fragile set
- #:subset #:n 20 #:!c (q)
+ #:subset #:n 30 #:!c (q)
  '(x
-   ((lambda (_.0 : _.1) x) (Type _.2))
+   (fst (pair x _.0))
    ((lambda (_.0 : _.1) _.0) x)
    ((lambda (_.0 : _.1) x) _.2)
-   ((lambda (_.0 : _.1) x) (lambda (_.2 : _.3) (Type _.4))))
+   (snd (pair _.0 x))
+   ((lambda (_.0 : _.1) x) (lambda (_.2 : _.3) _.4))
+   ((lambda (_.0 : _.1) x) (Type _.2)))
  (evalo '() q 'x)
 
  ; NB: Fragile set
- #:subset #:n 10 #:!c (q)
+ #:subset #:n 30 #:!c (q)
  '((Type _.0)
    _.0
    (Pi (_.0 : (Type _.1)) (Type _.2))
@@ -145,11 +149,10 @@
    (Pi (_.0 : (Type _.1)) _.0))
  (evalo '() q q)
 
- ; TODO: Not sure why (fst (pair x y)) is a valid output
- #:out #:!c (q) '(x)
+ #:= #:!c (q) '(x)
  (evalo '() '(fst (pair x y)) q)
 
- #:out #:!c (q) '(y)
+ #:= #:!c (q) '(y)
  (evalo '() '(snd (pair x y)) q))
 
 (define typeo
