@@ -89,7 +89,30 @@
          (evalo gamma e2 e2^))]
       [(fresh (i)
          (== `(Type ,i) e)
-         (== `(Type ,i) e^))])))
+         (== `(Type ,i) e^))]
+      [(fresh (gamma x A B gamma^ A^ B^)
+         (== `(Sigma (,x : ,A) ,B) e)
+         (ext-envo gamma x x gamma^)
+         (== `(Sigma (,x : ,A^) ,B^) e^)
+         (evalo gamma A A^)
+         (evalo gamma^ B B^))]
+      [(fresh (e1 e2 e1^ e2^)
+         (== `(pair ,e1 ,e2) e)
+         (== `(pair ,e1^ ,e2^) e^)
+         (evalo gamma e1 e1^)
+         (evalo gamma e2 e2^))]
+      [(fresh (ep ep^ e1 e2 e1^)
+         (== `(fst ,ep) e)
+         (== `(pair ,e1 ,e2) ep^)
+         (== e1^ e^)
+         (evalo gamma ep ep^)
+         (evalo gamma e1 e1^))]
+      [(fresh (ep ep^ e1 e2 e2^)
+         (== `(snd ,ep) e)
+         (== `(pair ,e1 ,e2) ep^)
+         (== e2^ e^)
+         (evalo gamma ep ep^)
+         (evalo gamma e2 e2^))])))
 
 (chko
  #:out #:!c (q) '(Type lz)
@@ -105,7 +128,7 @@
         q)
 
  ; NB: Fragile set
- #:subset #:n 12 #:!c (q)
+ #:subset #:n 20 #:!c (q)
  '(x
    ((lambda (_.0 : _.1) x) (Type _.2))
    ((lambda (_.0 : _.1) _.0) x)
@@ -120,7 +143,14 @@
    (Pi (_.0 : (Type _.1)) (Type _.2))
    (Pi (_.0 : _.1) (Type _.2))
    (Pi (_.0 : (Type _.1)) _.0))
- (evalo '() q q))
+ (evalo '() q q)
+
+ ; TODO: Not sure why (fst (pair x y)) is a valid output
+ #:out #:!c (q) '(x)
+ (evalo '() '(fst (pair x y)) q)
+
+ #:out #:!c (q) '(y)
+ (evalo '() '(snd (pair x y)) q))
 
 (define typeo
   (lambda (Gamma e gamma A)
