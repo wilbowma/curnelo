@@ -156,7 +156,6 @@
          (== `(,e1 ,e2) e)
          (== A B)
          (ext-envo gamma^ x e2 gamma)
-;         (evalo gamma B B^)
          (type-checko Gamma e2 gamma^ A^)
          (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B)))]
       [(fresh (i)
@@ -331,7 +330,7 @@
                e `((A . Nat) . ,gamma) '(List A)))
 
  #:subset #:n 5 #:!c (e) '((nil Nat)
- ;; NB: Busy searching the universe hierarchy..
+ ;; NB: Busy eta-expanding things...
                             #;(((cons Nat) z) (nil Nat)))
  (fresh (gamma)
         (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
