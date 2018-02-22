@@ -54,6 +54,13 @@
       (== k `(lsucc ,k^))
       (max-levelo i^ j^ k^))]))
 
+(define (not-closureo e)
+  (conde
+   [(symbolo e)]
+   [(fresh (e1 e2)
+      (== `(,e1 . ,e2) e)
+      (=/= 'closure e1))]))
+
 (define evalo
   (lambda (gamma e e^)
     (conde
@@ -68,17 +75,18 @@
          (== `(lambda (,x : ,A) ,ebody) e)
          (== `(closure ,gamma (,x : ,A) ,ebody^) e^)
          (evalo gamma ebody ebody^))]
-      [(fresh (e1 e2 e2^ x A ebody env)
+      [(fresh (e1 e2 e2^)
          (== `(,e1 ,e2) e)
-         (evalo gamma e1
-                `(closure ,env (,x : ,A) ,ebody))
-         (evalo gamma e2 e2^)
-         (fresh (gamma^)
-           (ext-envo env
-                     x
-                     e2^
-                     gamma^)
-           (evalo gamma^ ebody e^)))]
+         (conde
+           [(fresh (e1^)
+              (not-closureo e1^)
+              (evalo gamma e1 e1^)
+              (== `(,e1^ ,e2^) e^))]
+           [(fresh (gamma^ x A ebody env)
+              (evalo gamma e1 `(closure ,env (,x : ,A) ,ebody))
+              (ext-envo env x e2^ gamma^)
+              (evalo gamma^ ebody e^))])
+         (evalo gamma e2 e2^))]
       [(fresh (i)
          (== `(Type ,i) e)
          (== `(Type ,i) e^))])))
@@ -97,7 +105,7 @@
         q)
 
  ; NB: Fragile set
- #:subset #:n 10 #:!c (q)
+ #:subset #:n 12 #:!c (q)
  '(x
    ((lambda (_.0 : _.1) x) (Type _.2))
    ((lambda (_.0 : _.1) _.0) x)
