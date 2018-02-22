@@ -162,6 +162,28 @@
     (conde
       [(varo e) ;; T-Var
        (lookupo e Gamma A)]
+      [(fresh (x A^ B Gamma^ gamma^ i j k) ;; T-Sigma
+         (== `(Sigma (,x : ,A^) ,B) e)
+         (ext-envo Gamma x A^ Gamma^)
+         (ext-envo gamma x x gamma^)
+         (== A `(Type ,i))
+         (max-levelo i j k)
+         (typeo Gamma A^ gamma `(Type ,i))
+         (typeo Gamma^ B gamma^ `(Type ,j)))]
+      [(fresh (e1 e2 x A^ B Gamma^ gamma^) ;; T-Pair
+         (== `(pair ,e1 ,e2) e)
+         (== `(Sigma (,x : ,A^) ,B) A)
+         (ext-envo Gamma x A^ Gamma^)
+         (ext-envo gamma x e1 gamma^)
+         (typeo Gamma e1 gamma A^)
+         (type-checko Gamma^ e2 gamma^ B))]
+      [(fresh (e1 x B) ;; T-Fst
+         (== `(fst ,e1) e)
+         (typeo Gamma e1 gamma `(Sigma (,x : ,A) ,B)))]
+      [(fresh (e1 x A^ B gamma^) ;; T-Snd
+         (== `(snd ,e1) e)
+         (ext-envo gamma^ x `(fst ,e1) gamma)
+         (typeo Gamma e1 gamma^ `(Sigma (,x : ,A^) ,A)))]
       [(fresh (x A^ B Gamma^ gamma^ i) ;; T-Pi-Prop
          (== `(Pi (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
