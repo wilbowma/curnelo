@@ -74,7 +74,7 @@
                 `(closure ,env (,x : ,A) ,ebody))
          (evalo gamma e2 e2^)
          (fresh (gamma^)
-           (ext-envo gamma
+           (ext-envo env
                      x
                      e2^
                      gamma^)
