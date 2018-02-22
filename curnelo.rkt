@@ -60,9 +60,7 @@
 
 (define (constanto e)
   (conde
-   [(symbolo e)
-    (=/= 'fst e)
-    (=/= 'snd e)]
+   [(varo e)]
    [(fresh (e1 e2)
       (== `(,e1 . ,e2) e)
       (=/= 'closure e1))]))
