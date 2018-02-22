@@ -13,6 +13,10 @@
 (define (varo e)
   (conde
    [(symbolo e)
+    (=/= e 'Sigma)
+    (=/= e 'pair)
+    (=/= e 'fst)
+    (=/= e 'snd)
     (=/= e 'Type)
     (=/= e 'closure)
     (=/= e 'lambda)
