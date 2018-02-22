@@ -323,9 +323,9 @@
                  (Nat . (Type lz)))
                e `((A . Nat) . ,gamma) '(List A)))
 
- ;; TODO: Busy searching the universe hierarchy..
- #:subset #:n 7 #:!c (e) '((nil Nat)
-                            (((cons Nat) z) (nil Nat)))
+ #:subset #:n 5 #:!c (e) '((nil Nat)
+ ;; NB: Busy searching the universe hierarchy..
+                            #;(((cons Nat) z) (nil Nat)))
  (fresh (gamma)
         (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
                  (nil . (Pi (A : (Type lz)) (List A)))
@@ -333,4 +333,15 @@
                  (z . Nat)
                  (s . (Pi (x : Nat) Nat))
                  (Nat . (Type lz)))
-               e `((A . Nat) . ,gamma) '(List A))))
+               e `((A . Nat) . ,gamma) '(List A)))
+
+ ;; But it's in there.
+ #:= #:n 1 #:!c (e) '()
+ (fresh (gamma)
+        (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
+                 (nil . (Pi (A : (Type lz)) (List A)))
+                 (List . (Pi (A : (Type lz)) (Type lz)))
+                 (z . Nat)
+                 (s . (Pi (x : Nat) Nat))
+                 (Nat . (Type lz)))
+               '(((cons Nat) z) (nil Nat)) `((A . Nat) . ,gamma) '(List A))))
