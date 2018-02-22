@@ -130,14 +130,14 @@
       [(fresh (x A^ B Gamma^ gamma^ i) ;; T-Pi-Prop
          (== `(Pi (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
-;         (ext-envo gamma x x gamma^)
+         (ext-envo gamma x x gamma^)
          (== A `(Type lz))
          (typeo Gamma A^ gamma `(Type ,i))
          (typeo Gamma^ B gamma^ `(Type lz)))]
       [(fresh (x A^ B Gamma^ gamma^ i j k) ;; T-Pi-Type
          (== `(Pi (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
-;         (ext-envo gamma x x gamma^)
+         (ext-envo gamma x x gamma^)
          (== A `(Type ,k))
          (max-levelo i j k)
          (typeo Gamma A^ gamma `(Type ,i))
@@ -146,18 +146,19 @@
          (== `(lambda (,x : ,A^) ,body) e)
          (== `(Pi (,x : ,A^) ,B) A)
          (ext-envo Gamma x A^ Gamma^)
-;         (ext-envo gamma x x gamma^)
+         (ext-envo gamma x x gamma^)
          (typeo Gamma A^ gamma `(Type ,i))
          (typeo Gamma^ body gamma^ B))]
-      [(fresh (e1 e2 A^ B gamma^^ gamma^ x) ;; T-App
+      [(fresh (e1 e2 A^ B gamma^ x) ;; T-App
          ;; I suspect this could use more constraints to allow typeo to return different subgammas
          ;; from type-checko, but I'll sort that out later.
          ;; Unification might just do the right thing
          (== `(,e1 ,e2) e)
+         (== A B)
          (ext-envo gamma^ x e2 gamma)
+;         (evalo gamma B B^)
          (type-checko Gamma e2 gamma^ A^)
-         (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B))
-         (== A B))]
+         (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B)))]
       [(fresh (i)
          (== `(Type ,i) e) ;; T-Type
          (levelo i)
