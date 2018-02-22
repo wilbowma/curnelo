@@ -272,17 +272,15 @@
                  (Nat . (Type lz)))
                e gamma 'NatList))
 
- ; Hm, doesn't want to generate a cons for some reason.
-; #:subset #:n 50 #:!c (e) '(nil ((cons z) nil))
-#; (fresh (gamma)
+ #:subset #:n 50 #:!c (e) '(nil ((cons z) nil))
+ (fresh (gamma)
         (typeo '((cons . (Pi (a : Nat) (Pi (cdr : NatList) NatList)))
                  (nil . NatList)
                  (NatList . (Type lz))
                  (z . Nat)
                  (s . (Pi (x : Nat) Nat))
                  (Nat . (Type lz)))
-               e gamma 'NatList))
- )
+               e gamma 'NatList)))
 
 (define eq-decl
   '((refl . (Pi (A : (Type lz)) (Pi (a : A) (((eq A) a) a))))
