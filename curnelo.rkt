@@ -57,9 +57,6 @@
 (define evalo
   (lambda (gamma e e^)
     (conde
-      [(fresh (i)
-         (== `(Type ,i) e)
-         (== `(Type ,i) e^))]
       [(varo e) (deltao e gamma e^)]
       [(fresh (A A^ B B^ gamma^ x)
          (== `(Pi (,x : ,A) ,B) e)
@@ -81,7 +78,10 @@
                      x
                      e2^
                      gamma^)
-           (evalo gamma^ ebody e^)))])))
+           (evalo gamma^ ebody e^)))]
+      [(fresh (i)
+         (== `(Type ,i) e)
+         (== `(Type ,i) e^))])))
 
 (chko
  #:out #:!c (q) '(Type lz)
@@ -96,7 +96,8 @@
           (lambda (x : (Type lz)) x))
         q)
 
- #:= #:n 5 #:!c (q)
+ ; NB: Fragile set
+ #:subset #:n 10 #:!c (q)
  '(x
    ((lambda (_.0 : _.1) x) (Type _.2))
    ((lambda (_.0 : _.1) _.0) x)
@@ -104,7 +105,8 @@
    ((lambda (_.0 : _.1) x) (lambda (_.2 : _.3) (Type _.4))))
  (evalo '() q 'x)
 
- #:= #:n 5 #:!c (q)
+ ; NB: Fragile set
+ #:subset #:n 10 #:!c (q)
  '((Type _.0)
    _.0
    (Pi (_.0 : (Type _.1)) (Type _.2))
@@ -115,10 +117,6 @@
 (define typeo
   (lambda (Gamma e gamma A)
     (conde
-     [(fresh (i)
-        (== `(Type ,i) e) ;; T-Type
-        (levelo i)
-        (== `(Type (lsucc ,i)) A))]
       [(varo e) ;; T-Var
        (lookupo e Gamma A)]
       [(fresh (x A^ B Gamma^ gamma^ i) ;; T-Pi-Prop
@@ -151,7 +149,11 @@
          (ext-envo gamma^ x e2 gamma)
          (type-checko Gamma e2 gamma^ A^)
          (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B))
-         (== A B))])))
+         (== A B))]
+      [(fresh (i)
+         (== `(Type ,i) e) ;; T-Type
+         (levelo i)
+         (== `(Type (lsucc ,i)) A))])))
 
 ;; Need infer/check distinction for algorithmic interpretation.
 (define (type-checko Gamma e gamma A)
