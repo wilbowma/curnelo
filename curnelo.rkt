@@ -162,6 +162,10 @@
     (conde
       [(varo e) ;; T-Var
        (lookupo e Gamma A)]
+       [(fresh (i)
+         (== `(Type ,i) e) ;; T-Type
+         (== `(Type (lsucc ,i)) A)
+         (levelo i))]
       [(fresh (x A^ B Gamma^ gamma^ i j k) ;; T-Sigma
          (== `(Sigma (,x : ,A^) ,B) e)
          (ext-envo Gamma x A^ Gamma^)
@@ -214,11 +218,7 @@
          (== A B)
          (ext-envo gamma^ x e2 gamma)
          (type-checko Gamma e2 gamma^ A^)
-         (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B)))]
-      [(fresh (i)
-         (== `(Type ,i) e) ;; T-Type
-         (levelo i)
-         (== `(Type (lsucc ,i)) A))])))
+         (typeo Gamma e1 gamma^ `(Pi (,x : ,A^) ,B)))])))
 
 ;; Need infer/check distinction for algorithmic interpretation.
 (define (type-checko Gamma e gamma A)
