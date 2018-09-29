@@ -1,6 +1,6 @@
 #lang racket/base
 (require
- "mk/mk.scm"
+ "mk/condp/mk.rkt"
  rnrs/base-6
  rnrs/lists-6
  "chko.rkt"
@@ -317,7 +317,7 @@
           (Nat . (Type lz))) e '() '(Pi (α : (Type lz)) α)))
 
 ;; Let's try some lists
-(chko
+#;(chko
  #:subset #:n 2 #:!c (e) '(nil)
  (fresh (gamma)
         (typeo '((cons . (Pi (a : Nat) (Pi (cdr : NatList) NatList)))
@@ -375,8 +375,8 @@
                e `((a . z) (A . Nat) . ,gamma) '(((eq A) a) a))))
 
 ;; Let's try polymorphic Lists
-(chko
- #:out #:n 1 #:!c (e) '(nil Nat)
+#;(chko
+; #:out #:n 1 #:!c (e) '(nil Nat)
  (fresh (gamma)
         (typeo '((cons . (Pi (A : (Type lz)) (Pi (a : A) (Pi (cdr : (List A)) (List A)))))
                  (nil . (Pi (A : (Type lz)) (List A)))

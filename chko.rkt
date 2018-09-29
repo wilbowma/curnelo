@@ -1,7 +1,7 @@
 #lang racket
 
 (require
- "mk/mk.scm"
+ "mk/condp/mk.rkt"
  chk
  compatibility/mlist
  (for-syntax racket/base syntax/parse))
@@ -138,10 +138,10 @@ corresponding query.
 (define-syntax (chko syn)
   (syntax-parse syn
     [(_ t:testo)
-     (quasisyntax/loc syn (chk #,@(quasisyntax/loc t t.chk-test)))]
+     (quasisyntax/loc syn (chk #,@(quasisyntax/loc #'t t.chk-test)))]
     [(_ r ... t:testo)
      (quasisyntax/loc syn
        (chk*
         #,(quasisyntax/loc syn
             (chko r ...))
-        (chk #,@(quasisyntax/loc t t.chk-test))))]))
+        (chk #,@(quasisyntax/loc #'t t.chk-test))))]))
